@@ -466,28 +466,102 @@ function showPredictions(scores) {
     results.append(row);
   });
 
-  const msg = document.createElement("p");
-  msg.className = "note";
+ const msg = document.createElement("p");
+msg.className = "note";
 
-  const highest = predictions[0].probability * 100;
+const highest = predictions[0].probability * 100;
+const topDisease = predictions[0].name;
 
-  if (highest < 60) {
-    msg.textContent =
-      "⚠ LOW CONFIDENCE (" + highest.toFixed(1) +
-      "%). The AI is uncertain. Please upload another clear leaf image or consult an agricultural expert.";
-  } else {
-    msg.textContent =
-      "Top match: " + predictions[0].name +
-      ". Confidence score: " + highest.toFixed(1) +
-      "%. This is an AI prediction, not a confirmed diagnosis. Please verify with an agricultural expert.";
+if (highest < 60) {
+  msg.textContent =
+    "⚠ LOW CONFIDENCE (" + highest.toFixed(1) +
+    "%). The AI is uncertain. Please upload another clear leaf image or consult an agricultural expert.";
+} else {
+  msg.textContent =
+    "Top match: " + topDisease +
+    ". Confidence score: " + highest.toFixed(1) +
+    "%. This is an AI prediction, not a confirmed diagnosis. Please verify with an agricultural expert.";
+}
+
+msg.style.background = "#f0f7f1";
+msg.style.padding = "13px";
+msg.style.borderRadius = "12px";
+msg.style.lineHeight = "1.6";
+
+results.append(msg);
+
+// DISEASE INFORMATION
+const diseaseInfo = {
+  "Tomato - Early blight": {
+    description: "A fungal disease affecting tomato leaves.",
+    symptoms: "Dark spots with circular ring patterns on older leaves."
+  },
+  "Tomato - Late blight": {
+    description: "A disease that can spread rapidly in cool, wet conditions.",
+    symptoms: "Irregular dark patches on leaves, sometimes with pale growth underneath."
+  },
+  "Tomato - Bacterial spot": {
+    description: "A bacterial disease affecting tomato leaves and other plant parts.",
+    symptoms: "Small dark spots that may develop yellow areas around them."
+  },
+  "Tomato - Septoria leaf spot": {
+    description: "A fungal leaf disease commonly affecting tomato plants.",
+    symptoms: "Small circular spots with pale centres and dark edges."
+  },
+  "Potato - Early blight": {
+    description: "A fungal disease affecting potato foliage.",
+    symptoms: "Brown spots, often with concentric rings, on older leaves."
+  },
+  "Potato - Late blight": {
+    description: "A serious disease that can affect potato leaves and tubers.",
+    symptoms: "Irregular dark patches on leaves, especially in humid conditions."
   }
+};
 
-  msg.style.background = "#f0f7f1";
-  msg.style.padding = "13px";
-  msg.style.borderRadius = "12px";
-  msg.style.lineHeight = "1.6";
+const info = diseaseInfo[topDisease];
 
-  results.append(msg);
+const infoBox = document.createElement("div");
+infoBox.style.background = "#ffffff";
+infoBox.style.border = "1px solid #dcebe0";
+infoBox.style.borderRadius = "14px";
+infoBox.style.padding = "16px";
+infoBox.style.marginTop = "14px";
+
+const infoTitle = document.createElement("h3");
+infoTitle.textContent = "🌿 Disease Information";
+infoTitle.style.color = "#176b3a";
+infoTitle.style.margin = "0 0 10px";
+
+infoBox.append(infoTitle);
+
+if (highest < 60) {
+  const warning = document.createElement("p");
+  warning.textContent =
+    "Disease information is hidden because the AI prediction has low confidence.";
+  infoBox.append(warning);
+} else if (info) {
+  const description = document.createElement("p");
+  description.textContent = info.description;
+
+  const symptoms = document.createElement("p");
+  symptoms.textContent = "Common symptoms: " + info.symptoms;
+
+  infoBox.append(description, symptoms);
+} else {
+  const healthy = document.createElement("p");
+  healthy.textContent =
+    "No disease information is available for this predicted category. Please verify the result with an agricultural expert.";
+  infoBox.append(healthy);
+}
+
+const disclaimer = document.createElement("p");
+disclaimer.textContent =
+  "Educational information only. These symptoms are not a confirmed diagnosis.";
+disclaimer.style.fontSize = "12px";
+disclaimer.style.color = "#607568";
+
+infoBox.append(disclaimer);
+results.append(infoBox);
 }
 async function predict(element) {
   if (!model) {
