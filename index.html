@@ -562,6 +562,86 @@ disclaimer.style.color = "#607568";
 
 infoBox.append(disclaimer);
 results.append(infoBox);
+ // TREATMENT AND PREVENTION INFORMATION
+
+const preventionInfo = {
+  "Tomato - Early blight": [
+    "Remove severely affected leaves with clean tools.",
+    "Avoid wetting the leaves while watering.",
+    "Provide enough space between plants for airflow."
+  ],
+  "Tomato - Late blight": [
+    "Avoid overhead watering.",
+    "Remove affected plant material carefully.",
+    "Monitor plants regularly during cool, wet weather."
+  ],
+  "Tomato - Bacterial spot": [
+    "Avoid handling plants when they are wet.",
+    "Use clean gardening tools.",
+    "Remove badly affected plant material."
+  ],
+  "Tomato - Septoria leaf spot": [
+    "Remove affected lower leaves.",
+    "Avoid splashing soil onto leaves.",
+    "Keep enough space between plants."
+  ],
+  "Potato - Early blight": [
+    "Remove affected leaves when appropriate.",
+    "Avoid overhead watering.",
+    "Maintain good spacing between plants."
+  ],
+  "Potato - Late blight": [
+    "Monitor plants frequently in humid weather.",
+    "Remove affected plant material safely.",
+    "Seek agricultural advice promptly."
+  ]
+};
+
+const tips = preventionInfo[topDisease];
+
+const preventionBox = document.createElement("div");
+preventionBox.style.background = "#edf7ef";
+preventionBox.style.border = "1px solid #cfe2d3";
+preventionBox.style.borderRadius = "14px";
+preventionBox.style.padding = "16px";
+preventionBox.style.marginTop = "14px";
+
+const preventionTitle = document.createElement("h3");
+preventionTitle.textContent = "🛡️ Prevention & Crop Care";
+preventionTitle.style.color = "#176b3a";
+preventionBox.append(preventionTitle);
+
+if (highest < 60) {
+  const warning = document.createElement("p");
+  warning.textContent =
+    "Prevention tips are hidden because the AI prediction has low confidence.";
+  preventionBox.append(warning);
+} else if (tips) {
+  const tipList = document.createElement("ul");
+
+  tips.forEach(function(tip) {
+    const item = document.createElement("li");
+    item.textContent = tip;
+    tipList.append(item);
+  });
+
+  preventionBox.append(tipList);
+} else {
+  const message = document.createElement("p");
+  message.textContent =
+    "No specific crop-care tips are available for this category.";
+  preventionBox.append(message);
+}
+
+const expertNote = document.createElement("p");
+expertNote.textContent =
+  "These are general educational suggestions, not a treatment prescription. Consult a qualified agricultural expert before taking action.";
+
+expertNote.style.fontSize = "12px";
+expertNote.style.color = "#607568";
+preventionBox.append(expertNote);
+
+results.append(preventionBox);
 }
 async function predict(element) {
   if (!model) {
