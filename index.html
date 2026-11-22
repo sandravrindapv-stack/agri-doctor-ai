@@ -188,13 +188,22 @@ function showPredictions(scores) {
 
   const msg = document.createElement("p");
   msg.className = "note";
-  msg.textContent =
-    "Highest-scoring category: " + predictions[0].name +
-    ". This is an AI prediction, not a confirmed diagnosis.";
+
+  const highest = predictions[0].probability * 100;
+
+  if (highest < 60) {
+    msg.textContent =
+      "Low confidence (" + highest.toFixed(1) +
+      "%). The AI is uncertain. Please upload another clear leaf image or consult an agricultural expert.";
+  } else {
+    msg.textContent =
+      "Highest-scoring category: " + predictions[0].name +
+      ". Confidence score: " + highest.toFixed(1) +
+      "%. This is an AI prediction, not a confirmed diagnosis.";
+  }
 
   results.append(msg);
 }
-
 async function predict(element) {
   if (!model) {
     statusEl.textContent = "Please wait for the AI model to load.";
