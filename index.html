@@ -352,11 +352,17 @@ function showPredictions(scores) {
 
   results.innerHTML = "";
 
-  predictions.slice(0, 3).forEach(p => {
+  predictions.slice(0, 3).forEach((p, index) => {
     const pct = (p.probability * 100).toFixed(1);
 
     const row = document.createElement("div");
     row.className = "result";
+    row.style.padding = "14px";
+    row.style.borderRadius = "14px";
+    row.style.background = index === 0 ? "#edf7ef" : "#f8faf8";
+    row.style.border = index === 0
+      ? "2px solid #176b3a"
+      : "1px solid #e1ebe3";
 
     const head = document.createElement("div");
     head.className = "result-head";
@@ -364,10 +370,21 @@ function showPredictions(scores) {
     const name = document.createElement("strong");
     name.textContent = p.name;
 
-    const value = document.createElement("span");
+    const value = document.createElement("strong");
     value.textContent = pct + "%";
+    value.style.color = "#176b3a";
 
     head.append(name, value);
+
+    if (index === 0) {
+      const topLabel = document.createElement("div");
+      topLabel.textContent = "★ TOP MATCH";
+      topLabel.style.color = "#176b3a";
+      topLabel.style.fontSize = "11px";
+      topLabel.style.fontWeight = "700";
+      topLabel.style.marginBottom = "8px";
+      row.append(topLabel);
+    }
 
     const track = document.createElement("div");
     track.className = "track";
@@ -388,14 +405,19 @@ function showPredictions(scores) {
 
   if (highest < 60) {
     msg.textContent =
-      "Low confidence (" + highest.toFixed(1) +
+      "⚠ LOW CONFIDENCE (" + highest.toFixed(1) +
       "%). The AI is uncertain. Please upload another clear leaf image or consult an agricultural expert.";
   } else {
     msg.textContent =
-      "Highest-scoring category: " + predictions[0].name +
+      "Top match: " + predictions[0].name +
       ". Confidence score: " + highest.toFixed(1) +
-      "%. This is an AI prediction, not a confirmed diagnosis.";
+      "%. This is an AI prediction, not a confirmed diagnosis. Please verify with an agricultural expert.";
   }
+
+  msg.style.background = "#f0f7f1";
+  msg.style.padding = "13px";
+  msg.style.borderRadius = "12px";
+  msg.style.lineHeight = "1.6";
 
   results.append(msg);
 }
