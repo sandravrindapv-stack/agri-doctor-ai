@@ -341,6 +341,18 @@ Choose or capture a leaf image to begin.
   📄 Download Analysis Report
 </button>
 </section>
+<div class="history-panel">
+  <h3>📋 Recent Analysis History</h3>
+  <p class="note">Your last five leaf analyses will appear here.</p>
+
+  <div id="analysisHistory">
+    <p class="note">No previous analyses yet.</p>
+  </div>
+
+  <button id="clearHistory" class="secondary" type="button">
+    🗑️ Clear History
+  </button>
+</div>
 
 <section class="panel">
 <span class="tag">Important</span>
@@ -645,6 +657,30 @@ expertNote.style.color = "#607568";
 preventionBox.append(expertNote);
 
 results.append(preventionBox);
+ // SAVE ANALYSIS TO HISTORY
+
+if (highest >= 60) {
+  try {
+    let history = JSON.parse(
+      localStorage.getItem("agriDoctorHistory") || "[]"
+    );
+
+    history.unshift({
+      disease: topDisease,
+      confidence: highest.toFixed(1),
+      date: new Date().toLocaleString()
+    });
+
+    history = history.slice(0, 5);
+
+    localStorage.setItem(
+      "agriDoctorHistory",
+      JSON.stringify(history)
+    );
+  } catch (error) {
+    console.warn("Could not save analysis history.", error);
+  }
+}
 }
 async function predict(element) {
   if (!model) {
@@ -818,6 +854,56 @@ document.getElementById("downloadReport").addEventListener("click", function() {
 
   URL.revokeObjectURL(url);
 });
+ // DISPLAY ANALYSIS HISTORY
+
+function renderAnalysisHistory() {
+  const historyBox = document.getElementById("analysisHistory");
+
+  let history = [];
+
+  try {
+    history = JSON.parse(
+      localStorage.getItem("agriDoctorHistory") || "[]"
+    );
+  } catch (error) {
+    history = [];
+  }
+
+  historyBox.innerHTML = "";
+
+  if (history.length === 0) {
+    historyBox.textContent = "No previous analyses yet.";
+    return;
+  }
+
+  history.forEach(function(item, index) {
+    const entry = document.createElement("div");
+    entry.style.padding = "12px";
+    entry.style.marginTop = "10px";
+    entry.style.background = "#f0f7f1";
+    entry.style.borderRadius = "12px";
+
+    const heading = document.createElement("strong");
+    heading.textContent = (index + 1) + ". " + item.disease;
+
+    const details = document.createElement("p");
+    details.textContent =
+      "Confidence: " + item.confidence + "%";
+
+    const date = document.createElement("small");
+    date.textContent = item.date;
+
+    entry.append(heading, details, date);
+    historyBox.append(entry);
+  });
+}
+
+document.getElementById("clearHistory").addEventListener("click", function() {
+  localStorage.removeItem("agriDoctorHistory");
+  renderAnalysisHistory();
+});
+
+renderAnalysisHistory();
 loadModel();
 </script>
 </body>
