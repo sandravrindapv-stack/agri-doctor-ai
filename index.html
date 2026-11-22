@@ -218,10 +218,9 @@ async function predict(element) {
     ctx.drawImage(element, 0, 0, 224, 224);
 
     input = tf.tidy(() => {
-      const pixels = tf.browser.fromPixels(canvas);
-      return tf.expandDims(pixels.toFloat(), 0);
-    });
-
+    const pixels = tf.browser.fromPixels(canvas);
+const floatPixels = tf.cast(pixels, "float32");
+return tf.expandDims(floatPixels, 0); 
     output = model.predict(input);
 
     const scores = Array.from(await output.data());
