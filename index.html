@@ -337,6 +337,9 @@ footer {
 <div id="results" class="note">
 Choose or capture a leaf image to begin.
 </div>
+ <button id="downloadReport" class="secondary" type="button">
+  📄 Download Analysis Report
+</button>
 </section>
 
 <section class="panel">
@@ -772,7 +775,49 @@ document.getElementById("stopCamera").addEventListener("click", () => {
 
   document.getElementById("cameraActions").style.display = "none";
 });
+// DOWNLOAD ANALYSIS REPORT
 
+document.getElementById("downloadReport").addEventListener("click", function() {
+  const resultsText = document.getElementById("results").innerText;
+
+  if (
+    !resultsText ||
+    resultsText.includes("Choose or capture a leaf image to begin.")
+  ) {
+    alert("Please analyse a leaf image before downloading a report.");
+    return;
+  }
+
+  const report =
+    "AGRI DOCTOR AI\n" +
+    "Plant Disease Analysis Report\n" +
+    "================================\n\n" +
+    "Date: " + new Date().toLocaleString() + "\n\n" +
+    "ANALYSIS RESULTS\n\n" +
+    resultsText + "\n\n" +
+    "================================\n" +
+    "IMPORTANT DISCLAIMER\n" +
+    "This is an educational AI prototype.\n" +
+    "Predictions are not confirmed plant diagnoses.\n" +
+    "Please consult an agricultural expert before taking action.\n\n" +
+    "Agri Doctor AI - Student Project";
+
+  const blob = new Blob([report], {
+    type: "text/plain;charset=utf-8"
+  });
+
+  const url = URL.createObjectURL(blob);
+  const link = document.createElement("a");
+
+  link.href = url;
+  link.download = "Agri_Doctor_AI_Analysis_Report.txt";
+
+  document.body.appendChild(link);
+  link.click();
+  link.remove();
+
+  URL.revokeObjectURL(url);
+});
 loadModel();
 </script>
 </body>
