@@ -195,6 +195,9 @@ function showPredictions(scores) {
   results.append(msg);
 }
 
+d = tf.image.resizeBilinear(
+        pixels, [224, 224]
+      );
 async function predict(element) {
   if (!model) {
     statusEl.textContent = "Please wait for the AI model to load.";
@@ -202,7 +205,6 @@ async function predict(element) {
   }
 
   if (predicting) return;
-
   predicting = true;
 
   let input = null;
@@ -211,15 +213,16 @@ async function predict(element) {
   try {
     statusEl.textContent = "Analysing leaf image...";
 
-    input = tf.tidy(() => {
-      const pixels = tf.browser.fromPixels(element);
-      const resized = tf.image.resizeBilinear(
-        pixels, [224, 224]
-      );
+    const canvas = document.createElement("canvas");
+    canvas.width = 224;
+    canvas.height = 224;
 
-      // The model already contains its own rescaling layer.
-      // Therefore, do not normalize the image again here.
-      return resized.expandDims(0).toFloat();
+    const ctx = canvas.getContext("2d");
+    ctx.drawImage(element, 0, 0, 224, 224);
+
+    input = tf.tidy(() => {
+      const pixels = tf.browser.fromPixels(canvas);
+      return tf.expandDims(pixels.toFloat(), 0);
     });
 
     output = model.predict(input);
@@ -243,7 +246,6 @@ async function predict(element) {
     predicting = false;
   }
 }
-
 gallery.addEventListener("change", event => {
   const file = event.target.files && event.target.files[0];
   if (!file) return;
